@@ -275,7 +275,7 @@ var tarteaucitron = {
                 html += '<div id="tarteaucitronPremium"></div>';
                 html += '<div id="tarteaucitronBack" onclick="tarteaucitron.userInterface.closePanel();"></div>';
                 html += '<div id="tarteaucitron" role="dialog" aria-labelledby="dialogTitle">';
-                html += '   <button type="button" id="tarteaucitronClosePanel" onclick="tarteaucitron.userInterface.closePanel();">';
+                html += '   <button type="button" id="tarteaucitronClosePanel" onclick="tarteaucitron.userInterface.closePanel();tarteaucitron.userInterface.giveFocus(\'tarteaucitronManager\');">';
                 html += '       ' + tarteaucitron.lang.close;
                 html += '   </button>';
                 html += '   <div id="tarteaucitronServices">';
@@ -392,7 +392,7 @@ var tarteaucitron = {
                         html += '   </button><!-- @whitespace';
                         html += '   --><button type="button" id="tarteaucitronCookiesNumber" onclick="tarteaucitron.userInterface.toggleCookiesList();">0</button>';
                         html += '   <div id="tarteaucitronCookiesListContainer">';
-                        html += '       <button type="button" id="tarteaucitronClosePanelCookie" onclick="tarteaucitron.userInterface.closePanel();">';
+                        html += '       <button type="button" id="tarteaucitronClosePanelCookie" onclick="tarteaucitron.userInterface.closePanel();tarteaucitron.userInterface.giveFocus(\'tarteaucitronCookiesNumber\');">';
                         html += '           ' + tarteaucitron.lang.close;
                         html += '       </button>';
                         html += '       <div class="tarteaucitronCookiesListMain" id="tarteaucitronCookiesTitle">';
@@ -855,6 +855,13 @@ var tarteaucitron = {
             //end ie compatibility
 
             window.dispatchEvent(tacClosePanelEvent);
+        },
+        "giveFocus": function(id) {
+            "use strict";
+
+            var elem = document.querySelector('#' + id);
+            if (elem === null) return;
+            elem.focus();
         },
         "focusTrap": function() {
             "use strict";
