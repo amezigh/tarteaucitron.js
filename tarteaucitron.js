@@ -275,7 +275,7 @@ var tarteaucitron = {
                 html += '<div id="tarteaucitronPremium"></div>';
                 html += '<div id="tarteaucitronBack" onclick="tarteaucitron.userInterface.closePanel();"></div>';
                 html += '<div id="tarteaucitron" role="dialog" aria-labelledby="dialogTitle">';
-                html += '   <button type="button" id="tarteaucitronClosePanel" onclick="tarteaucitron.userInterface.closePanel();tarteaucitron.userInterface.giveFocus(\'tarteaucitronManager\');">';
+                html += '   <button type="button" id="tarteaucitronClosePanel" onclick="tarteaucitron.userInterface.closePanel();">';
                 html += '       ' + tarteaucitron.lang.close;
                 html += '   </button>';
                 html += '   <div id="tarteaucitronServices">';
@@ -391,8 +391,8 @@ var tarteaucitron = {
                     if (tarteaucitron.parameters.cookieslist === true) {
                         html += '   </button><!-- @whitespace';
                         html += '   --><button type="button" id="tarteaucitronCookiesNumber" onclick="tarteaucitron.userInterface.toggleCookiesList();">0</button>';
-                        html += '   <div id="tarteaucitronCookiesListContainer">';
-                        html += '       <button type="button" id="tarteaucitronClosePanelCookie" onclick="tarteaucitron.userInterface.closePanel();tarteaucitron.userInterface.giveFocus(\'tarteaucitronCookiesNumber\');">';
+                        html += '   <div id="tarteaucitronCookiesListContainer" role="dialog" aria-labelledby="tarteaucitronCookiesNumberBis">';
+                        html += '       <button type="button" id="tarteaucitronClosePanelCookie" onclick="tarteaucitron.userInterface.toggleCookiesList();">';
                         html += '           ' + tarteaucitron.lang.close;
                         html += '       </button>';
                         html += '       <div class="tarteaucitronCookiesListMain" id="tarteaucitronCookiesTitle">';
@@ -838,8 +838,10 @@ var tarteaucitron = {
             } else {
                 tarteaucitron.userInterface.css('tarteaucitronBack', 'display', 'none');
             }
-            if (document.getElementById('tarteaucitronCloseAlert') !== null) {
+            if (document.getElementById('tarteaucitronCloseAlert') !== null && document.getElementById('tarteaucitronCloseAlert').offsetHeight > 0) {
                 document.getElementById('tarteaucitronCloseAlert').focus();
+            } else {
+                document.getElementById('tarteaucitronManager').focus();
             }
             //document.getElementById('contentWrapper').setAttribute("aria-hidden", "false");
             document.getElementsByTagName('body')[0].classList.remove('modal-open');
@@ -856,22 +858,24 @@ var tarteaucitron = {
 
             window.dispatchEvent(tacClosePanelEvent);
         },
-        "giveFocus": function(id) {
-            "use strict";
-
-            var elem = document.querySelector('#' + id);
-            if (elem === null) return;
-            elem.focus();
-        },
         "focusTrap": function() {
             "use strict";
 
             var focusableEls,
                 firstFocusableEl,
                 lastFocusableEl,
-                filtered;
+                filtered,
+                container;
 
-            focusableEls = document.getElementById('tarteaucitron').querySelectorAll('a[href], button');
+            if (document.getElementById('tarteaucitron').offsetHeight > 0) {
+                container = document.getElementById('tarteaucitron');
+            } else if (document.getElementById('tarteaucitronCookiesListContainer').offsetHeight > 0) {
+                container = document.getElementById('tarteaucitronCookiesListContainer');
+            } else {
+                return;
+            }
+
+            focusableEls =  container.querySelectorAll('a[href], button');
             filtered = [];
 
             // get only visible items
@@ -884,8 +888,8 @@ var tarteaucitron = {
             firstFocusableEl = filtered[0];
             lastFocusableEl = filtered[filtered.length - 1];
 
-            //loop focus inside tarteaucitron
-            document.getElementById('tarteaucitron').addEventListener("keydown", function (evt) {
+            //loop focus inside tarteaucitron or tarteaucitronCookiesListContainer
+            container.addEventListener("keydown", function (evt) {
 
                 if ( evt.key === 'Tab' || evt.keyCode === 9 ) {
 
@@ -953,14 +957,17 @@ var tarteaucitron = {
             if (div.style.display !== 'block') {
                 tarteaucitron.cookie.number();
                 div.style.display = 'block';
+                tarteaucitron.userInterface.focusTrap();
                 tarteaucitron.userInterface.jsSizing('cookie');
                 tarteaucitron.userInterface.css('tarteaucitron', 'display', 'none');
                 tarteaucitron.userInterface.css('tarteaucitronBack', 'display', 'block');
                 tarteaucitron.fallback(['tarteaucitronInfoBox'], function (elem) {
-                elem.style.display = 'none';
+                    elem.style.display = 'none';
+                    document.getElementById('tarteaucitronClosePanelCookie').focus();
                 }, true);
             } else {
                 div.style.display = 'none';
+                document.getElementById('tarteaucitronCookiesNumber').focus();
             }
         },
         "toggle": function (id, closeClass, button) {
